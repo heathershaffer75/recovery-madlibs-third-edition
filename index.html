@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Recovery Mad Libs 2 — Second Edition</title>
+  <style>
+    :root {
+      --bg: #0f172a;            /* slate-900 */
+      --panel: #111827;         /* gray-900 */
+      --muted: #1f2937;         /* gray-800 */
+      --text: #e5e7eb;          /* gray-200 */
+      --sub: #94a3b8;           /* slate-400 */
+      --accent: #22c55e;        /* green-500 */
+      --accent-2: #38bdf8;      /* sky-400 */
+      --danger: #ef4444;        /* red-500 */
+      --card: #0b1220;
+      --field: #0b1220;
+      --chip: #0e1726;
+      --shadow: 0 15px 35px rgba(0,0,0,.35), 0 5px 15px rgba(0,0,0,.25);
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: radial-gradient(1200px 800px at 20% -10%, #12203a 0%, var(--bg) 40%) no-repeat,
+                              radial-gradient(1200px 800px at 120% 120%, #0b1a30 0%, var(--bg) 50%) no-repeat;
+      color: var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      min-height: 100vh; display: grid; grid-template-rows: auto 1fr auto;
+    }
+    header {
+      padding: 24px 20px; position: sticky; top: 0; z-index: 10;
+      backdrop-filter: blur(8px);
+      background: linear-gradient(180deg, rgba(15,23,42,.85), rgba(15,23,42,.55) 60%, rgba(15,23,42,0));
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .container { width: min(1200px, 92vw); margin: 0 auto; }
+    h1 { margin: 0 0 6px; font-size: clamp(22px, 4vw, 32px); letter-spacing: .5px; }
+    .sub { color: var(--sub); font-size: 14px; }
+    main { padding: 20px; }
+    .grid { display: grid; grid-template-columns: 480px minmax(0, 1fr); gap: 24px; }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .panel { padding: 16px; }
+    .story-select label { display:block; font-weight:600; margin-bottom:8px; }
+    select, input[type="text"], textarea {
+      width: 100%; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,.08);
+      background: var(--field); color: var(--text);
+      outline: none;
+    }
+    select { cursor: pointer; }
+    .chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;}
+    .chip {
+      background: var(--chip); border:1px solid rgba(255,255,255,.08);
+      padding:6px 10px; border-radius:999px; font-size:12px; color:var(--sub);
+    }
+    .inputs { display: grid; gap: 12px; margin-top: 16px; }
+    .input-row {
+      display:grid;
+      grid-template-columns: 150px minmax(0, 1fr) 44px;
+      gap: 10px;
+      align-items:center;
+    }
+    .input-row input {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  font-size: 17px;
+  padding: 12px 14px;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  box-sizing: border-box;
+}
+    .btns { display:flex; gap:10px; flex-wrap:wrap; }
+    button {
+      border: none; padding: 10px 14px; border-radius: 12px; cursor: pointer; font-weight: 700;
+      transition: transform .05s ease, filter .2s ease; color: #0b1220;
+    }
+    button:active { transform: translateY(1px) scale(.99); }
+    .primary { background: linear-gradient(135deg, var(--accent-2), var(--accent)); color: #08211a; }
+    .ghost { background: rgba(255,255,255,.08); color: var(--text); border: 1px solid rgba(255,255,255,.08); }
+    .danger { background: linear-gradient(135deg, #ef4444, #f97316); color: #fff; }
+    .output { padding: 18px 18px 24px; line-height: 1.68; font-size: 17px; 
+  overflow: auto;
+
+  overflow: auto;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+    .output h2 { margin: 8px 0 12px; }
+    .output .para { background: rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); padding: 14px; border-radius: 12px; margin: 10px 0; }
+    footer { padding: 22px; text-align:center; color: var(--sub); border-top: 1px solid rgba(255,255,255,.06); }
+    .tips { font-size:12px; color: var(--sub); margin-top: 8px; }
+    .small { font-size: 12px; color: var(--sub); }
+    .kbd { padding:2px 6px; border-radius:6px; background: rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.15); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; }
+    .story-title { font-weight:700; font-size: 18px; }
+    .badge { padding:4px 8px; border-radius:999px; background:rgba(34,197,94,.15); border:1px solid rgba(34,197,94,.3); color:#9ae6b4; font-size:12px; }
+    .float { position: sticky; top: 82px; }
+    .helper { font-size: 12px; color: var(--sub); margin-top: 6px; }
+    /* responsive fix */
+    @media (max-width: 1100px) {
+      .grid { display: grid; grid-template-columns: 480px minmax(0, 1fr); gap: 24px; }
+      .input-row { grid-template-columns: 1fr; }
+      .input-row label { margin-bottom: 6px; }
+      .input-row button { justify-self: start; margin-top: 6px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>Recovery Mad Libs 2 <span class="badge">Second Edition</span></h1>
+      <div class="sub">10 long-form, hilarious, recovery-themed Mad Libs — 3 patients + 2 staff — built for group rooms.</div>
+    </div>
+  </header>
+  <main class="container">
+    <div class="grid">
+      <aside class="card panel float">
+        <div class="story-select">
+          <label for="story">Choose a story</label>
+          <select id="story"></select>
+          <div class="helper">Tip: Press <span class="kbd">Tab</span> to jump, click 🎯 to auto-suggest, then <b>⚡ Generate</b>.</div>
+        </div>
+
+        <div class="panel" style="padding:0; margin-top:12px;">
+          <div class="panel" style="padding:16px 16px 6px;">
+            <div class="story-title" id="storyTitle">—</div>
+            <div class="small" id="storyMeta"></div>
+          </div>
+          <div class="panel" style="padding:0 16px 16px;">
+            <div class="inputs" id="inputs"></div>
+            <div class="tips">Roles are fixed per story: <b>Patient 1–3</b> and <b>Staff 1–2</b>. Fill each placeholder once.</div>
+            <div class="btns" style="margin-top:12px;">
+              <button class="ghost" id="randomBtn" title="Suggest fun values for all fields">🎲 Random Fill</button>
+              <button class="ghost" id="clearBtn">🧽 Clear</button>
+              <button class="primary" id="generateBtn">⚡ Generate Story</button>
+              <button class="danger" id="copyBtn" title="Copy the generated story once it appears">📋 Copy Output</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:12px;">
+          <div class="sub" style="margin-bottom:6px;">Buzzword & Prompt Ideas</div>
+          <div id="chips" class="chips"></div>
+        </div>
+      </aside>
+
+      <section class="card output">
+        <h2 id="outTitle">Your Story Will Appear Here</h2>
+        <div id="outBody"></div>
+      </section>
+    </div>
+  </main>
+  <footer>
+    Works 100% offline • Copy results into slides or docs • MIT Licensed
+  </footer>
+
+  <script>
+  (function(){
+    const $ = (q) => document.querySelector(q);
+    const h = (tag, attrs={}, ...children) => {
+      const el = document.createElement(tag);
+      for (const [k,v] of Object.entries(attrs)) {
+        if (k === 'class') el.className = v;
+        else if (k === 'for') el.htmlFor = v;
+        else if (k.startsWith('on') && typeof v === 'function') el.addEventListener(k.slice(2), v);
+        else el.setAttribute(k,v);
+      }
+      for (const c of children) el.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+      return el;
+    };
+    const rand = (arr) => arr[Math.floor(Math.random()*arr.length)];
+    const toTitle = (s) => s.replace(/[-_]/g,' ').replace(/\\b\\w/g, m => m.toUpperCase());
+
+    // Pools
+    const pools = {
+      patientNames: ["Alex","Jordan","Taylor","Sam","Riley","Casey","Morgan","Blake","Quinn","Drew"],
+      staffNames: ["Pat","Lee","Avery","Chris","Jamie","Cameron","Dana","Rowan"],
+      buzzword: ["radical acceptance","HALT","pink cloud","sponsor call","values in action","relapse prevention plan","urge surfing","distress tolerance","CBT worksheet","accountability buddy","mindful breathing","dopamine detox","higher power","SMART goal","gratitude list","opposite action"],
+      catchphrase: ["We do hard things!","Not today, chaos!","Serenity now!","Progress, not perfection!","Say less—recover more!","Still here, still sober!","Breathe it out!"],
+      funnyObject: ["emotional support stapler","glittery stress potato","therapy kazoo","rubber chicken","pocket gong","dramatic cape","mini traffic cone","foam sword"],
+      pluralNoun: ["coping skills","snacks","affirmations","plush llamas","group notebooks","invisible trophies","sticky notes","wellness stickers","chair squeaks"],
+      object: ["clipboard","whiteboard","yoga block","traffic cone","ring light","folding chair","extension cord","glitter jar","megaphone","paper crown"],
+      animal: ["squirrel","pigeon","goose","cat","goldfish","hamster","chinchilla"],
+      funnyLiquid: ["emotional espresso","sparkling pickle juice","glow-stick soup","sparkle water","unicorn latte"],
+      drink: ["lukewarm coffee","electrolyte juice","mystery tea","herbal turbo tea"],
+      location: ["the gift shop","the parking lot","the nurses' station","the art room","the far field","the vending machines"],
+      color: ["chartreuse","mauve","electric blue","pumpkin spice","ghost white"],
+      funnySong: ["Eye of the Tiger on recorder","yoga flute remix","dramatic kazoo anthem","lo-fi recovery beats"],
+      food: ["anchovy cupcakes","pepperoni popsicles","pineapple pickles","broccoli brownies"],
+      verbIng: ["over-explaining","power-stretching","dramatic sighing","interpretive dancing","speed-walking","micro-napping"],
+      verb: ["debate","sidestep","moonwalk","murmur","power-walk","air-drum"],
+      bodyPart: ["left eyebrow","right pinky toe","core","hip flexor"],
+      adjective: ["chaotic","sparkly","mysterious","crispy","dizzy","zen","dramatic","mellow"],
+      phrase: ["nailed it weird","growth is messy","we out here healing"],
+    };
+
+    // Stories (10)
+    const stories = [
+  {
+    key: "meditation-meltdown",
+    title: "Meditation Meltdown",
+    meta: "3–5 paragraphs • 3 Patients + 2 Staff • mindfulness gone sideways",
+    paragraphs: [
+      "The day began with high hopes for a peaceful meditation. {{patient1}} brought in a {{funny_object}}, declaring it their official “mindfulness assistant.” {{patient2}} plopped onto a {{adjective}} yoga mat and immediately started {{verb_ing}}, while {{patient3}} whispered to the person next to them about {{plural_noun}}. {{staff1}} dimmed the lights and said, “Let’s just focus on our {{buzzword}},” while {{staff2}} shuffled through a pile of {{plural_noun}} that definitely didn’t look calming.",
+      "The silence lasted exactly thirty seconds before {{patient1}} sneezed so loudly it made a {{animal}} outside leap into the air and crash into a {{object}}. {{patient2}} gasped, insisting this was a sign from their {{higher_power}}, while {{patient3}} began chanting “{{catchphrase}}!” in a booming voice. {{staff1}} desperately tried to use a grounding exercise, telling everyone to name five {{plural_noun}} they could see, but all anyone could see was chaos. Meanwhile, {{staff2}} demonstrated deep breathing so aggressively that their face turned the color of {{color}}.",
+      "Halfway through, {{patient2}} admitted they weren’t meditating at all—they were mentally listing every {{plural_noun}} they regretted. {{patient1}} accused them of practicing “{{recovery_concept}} instead of mindfulness,” and {{patient3}} announced they’d achieved enlightenment by picturing {{plural_noun}} swimming in {{funny_liquid}}. The group broke into two factions: Team Stillness with {{patient1}} and Team Chaos with {{patient3}}. {{staff1}} sighed and pulled out a {{object}} to use as a pretend gong, which only made things worse when it shattered into {{plural_noun}}.",
+      "The finale came when {{staff2}} tripped over a {{funny_object}}, spilling their {{drink}} onto {{patient2}}’s journal. Everyone began clapping like this was part of the exercise, shouting “{{catchphrase}}!” as though they’d discovered the next stage of recovery. The group ended not with peace, but with a new affirmation: “When life gives you {{plural_noun}}, inhale {{buzzword}}, exhale {{catchphrase}}.”"
+    ]
+  },
+  {
+    key: "kickball-coping",
+    title: "Kickball Coping Skills",
+    meta: "Outdoor chaos • coping skills in motion",
+    paragraphs: [
+      "Community rec time was supposed to be simple: a friendly game of kickball. {{patient1}} stepped up to the plate with a {{funny_object}} instead of a ball, while {{patient2}} stretched dramatically, yelling about their {{buzzword}}. {{patient3}} just wanted to {{verb}} instead of play, but {{staff1}} blew the whistle and declared, “We are building {{recovery_concept}} today!” {{staff2}}, however, was busy writing the teams down on a {{object}} that immediately got lost under {{plural_noun}}.",
+      "The game started with chaos. {{patient1}} kicked the ball so hard it flew into {{location}}, nearly colliding with a {{animal}}. {{patient2}} chased after it, shouting “{{catchphrase}}!” while {{patient3}} tried to call a time-out because they had to {{verb}} urgently. {{staff1}} yelled, “Use your {{buzzword}}!” but no one seemed to know what that meant. Meanwhile, {{staff2}} tripped over {{plural_noun}} and accidentally declared {{patient2}} the MVP.",
+      "Midway through the game, tensions rose. {{patient1}} accused {{patient2}} of {{verb_ing}} instead of playing fair, while {{patient3}} suggested everyone just sit in a circle and share gratitudes for {{plural_noun}}. {{staff1}} tried to enforce the rules by waving around a {{funny_object}}, but this only made {{patient2}} laugh so hard they nearly collapsed. {{staff2}} attempted to restore order with a motivational speech about {{buzzword}}, but it was drowned out by {{patient1}} shouting about {{plural_noun}}.",
+      "Finally, the game ended in the most therapeutic way possible: by everyone collapsing onto the {{adjective}} grass and chanting “{{catchphrase}}!” together. {{staff1}} declared it the best example of “radical {{buzzword}}” they had ever seen. {{patient3}} suggested renaming the game “Kickball Coping Skills: Extreme Edition.” Everyone agreed the real winner was whoever managed not to trip over {{plural_noun}} during the chaos."
+    ]
+  },
+  {
+    key: "gratitude-attitude",
+    title: "Gratitude with Attitude",
+    meta: "Circle time goes sideways • gratitude, sarcasm, and spills",
+    paragraphs: [
+      "The gratitude circle began with the usual seriousness. {{patient1}} said they were grateful for their {{buzzword}}, while {{patient2}} dramatically announced they were grateful for {{funny_object}}. {{patient3}} rolled their eyes and muttered something about being thankful for {{plural_noun}}. {{staff1}} smiled and reminded everyone to “focus on the positives,” while {{staff2}} adjusted their {{object}} and tried to look supportive.",
+      "Things went sideways fast. {{patient1}} interrupted {{patient2}} to accuse them of being “sarcastic with their gratitude,” while {{patient3}} loudly declared, “I’m grateful for my {{buzzword}}, not your {{adjective}} {{noun}}!” The circle erupted into laughter when {{staff1}} attempted to share their gratitude for {{plural_noun}} but mispronounced it so badly it sounded like {{phrase}}. Meanwhile, {{staff2}} passed around a {{object}} filled with {{plural_noun}} as a “gratitude prop,” which only confused everyone more.",
+      "By the middle, chaos had replaced gratitude. {{patient2}} started chanting “{{catchphrase}}!” while waving their {{funny_object}} in the air. {{patient1}} tried to get serious again by saying they were grateful for {{recovery_concept}}, but {{patient3}} interrupted to say they were grateful for {{plural_noun}} because “at least they don’t talk back.” {{staff1}} sighed loudly and tried to lead a breathing exercise, but {{staff2}} accidentally knocked over {{object}}, spilling {{funny_liquid}} everywhere.",
+      "The circle ended with everyone listing three gratitudes: one serious, one sarcastic, and one ridiculous. {{patient1}} wrote down {{buzzword}}, {{patient2}} scribbled “{{funny_object}},” and {{patient3}} shouted out “{{plural_noun}}!” as their final answer. The group’s closing affirmation became: “In recovery, you can be grateful for anything—even {{funny_object}}—as long as you shout ‘{{catchphrase}}!’ at the end.”"
+    ]
+  },
+  {
+    key: "rap-battle",
+    title: "Large Group Room Recovery Rap Battle",
+    meta: "Rhymes, buzzwords, and accidental anthems",
+    paragraphs: [
+      "It was supposed to be a regular large group session, but {{patient1}} arrived carrying a {{funny_object}} and announced they were starting a recovery rap battle. {{patient2}} immediately jumped in, rhyming “{{buzzword}}” with “{{plural_noun}},” while {{patient3}} shouted that their flow was “{{adjective}} and {{adjective}}!” {{staff1}} sighed, clutching their {{object}}, and muttered, “This was not in the treatment manual.” Meanwhile, {{staff2}} looked way too excited, pulling out a {{plural_noun}} like they’d been waiting for this moment.",
+      "The first round went wild. {{patient1}} dropped a verse about {{recovery_concept}}, but forgot the beat and ended up {{verb_ing}} instead. {{patient2}} responded with a line about {{plural_noun}} that had the whole room chanting “{{catchphrase}}!” {{patient3}} tried to freestyle, but it came out sounding like a {{animal}} impression. {{staff1}} tried to call time-out, but {{staff2}} yelled “Encore!” and started beatboxing into a {{object}}.",
+      "By round two, the chaos was unstoppable. {{patient1}} rhymed “{{buzzword}}” with “{{funny_object}},” which made {{patient2}} collapse in laughter. {{patient3}} tried to one-up them with a verse about {{plural_noun}} swimming in {{funny_liquid}}, while {{staff1}} buried their face in their {{object}}. {{staff2}} attempted to rap about {{buzzword}}, but accidentally rhymed it with their own {{body_part}}, causing the entire room to explode with laughter.",
+      "The grand finale came when everyone, including {{staff1}}, joined in on a group chorus of “{{catchphrase}}!” over and over until it sounded like a recovery anthem. The rap battle ended with a tie, and {{patient3}} declared, “The real winner is {{buzzword}}.” The new group affirmation became: “When in doubt, rhyme it out—and always end with {{catchphrase}}!”"
+    ]
+  },
+  {
+    key: "pizza-relapse",
+    title: "Pizza Party Relapse Prevention",
+    meta: "Cheesy lessons • plans written on greasy napkins",
+    paragraphs: [
+      "The day was supposed to be special: a recovery pizza party. {{patient1}} insisted on ordering a pizza topped with {{weird_food}}, while {{patient2}} asked for extra {{plural_noun}} on theirs. {{patient3}} just wanted plain cheese, but {{staff1}} said, “Don’t forget—this is also a lesson in {{buzzword}}.” {{staff2}} walked in carrying a {{funny_object}}, announcing they were the official pizza referee.",
+      "The first disaster struck when {{patient1}}’s toppings arrived and looked suspiciously like {{plural_noun}}. {{patient2}} refused to eat it, shouting “{{catchphrase}}!” loud enough to make the delivery driver trip over a {{object}}. {{patient3}} tried to calm everyone down by {{verb_ing}}, but this only caused more chaos. {{staff1}} reminded everyone about using coping skills, but {{staff2}} was too busy trying to separate slices with a {{funny_object}}.",
+      "Halfway through the party, {{patient2}} declared they were making a relapse prevention plan on a greasy napkin, scribbling things like “avoid {{plural_noun}}” and “call my {{buzzword}} buddy.” {{patient1}} grabbed the napkin and added, “Step three: eat more {{weird_food}}.” {{patient3}} insisted that the only real plan was chanting “{{catchphrase}}!” before every bite. {{staff1}} shook their head while {{staff2}} took a victory photo holding a slice of {{adjective}} pizza above their head.",
+      "The party ended in predictable chaos. The napkin relapse plan was unreadable due to {{funny_liquid}} stains, and the group decided that the best prevention skill was simply “Don’t trust {{patient1}}’s pizza choices.” The final affirmation became: “Life is like pizza—sometimes messy, always cheesy, and better when topped with {{buzzword}}.”"
+    ]
+  },
+  {
+    key: "juice-journaling",
+    title: "Juice Bar Journaling",
+    meta: "Smoothies + prompts + unexpected sticker awards",
+    paragraphs: [
+      "The new wellness initiative was called “Juice & Journaling.” {{patient1}} proudly ordered a smoothie made of {{weird_food}}, while {{patient2}} insisted their drink had to include {{plural_noun}}. {{patient3}} rolled their eyes and said they’d rather just have {{funny_liquid}}. {{staff1}} clapped their hands, saying, “Great! Now let’s combine this with a journal prompt about {{buzzword}}.” {{staff2}} quietly adjusted their {{object}} and prepared to supervise.",
+      "Things unraveled quickly when {{patient1}} spilled their {{drink}} all over {{staff2}}’s {{object}}. {{patient2}} screamed, “{{catchphrase}}!” while trying to mop it up with {{plural_noun}}. {{patient3}} refused to participate, claiming their higher power told them not to write unless they had {{funny_object}}. {{staff1}} attempted to redirect, saying, “Just reflect on your {{buzzword}},” but everyone was too distracted by the sound of {{animal}} noises coming from outside.",
+      "Halfway through, {{patient1}} admitted they’d written three pages about {{plural_noun}} instead of their recovery. {{patient2}} confessed they had doodled pictures of {{funny_object}} instead of journaling. {{patient3}} claimed they had finished their entire prompt by writing just two words: “{{catchphrase}} forever.” {{staff1}} buried their face in their {{object}}, while {{staff2}} pretended to be impressed and gave everyone a sticker shaped like {{plural_noun}}.",
+      "The session ended with laughter and chaos. The official group conclusion was that juice makes journals {{adjective}}, but journals make juice {{adjective}}, and no one knew what that meant. The new affirmation became: “When in doubt, mix {{buzzword}} with {{catchphrase}}, and always double-blend your {{weird_food}}.”"
+    ]
+  },
+  {
+    key: "talent-show",
+    title: "Talent Show: Recovery Edition",
+    meta: "Standing ovations, foam swords, and radical acceptance",
+    paragraphs: [
+      "The community was buzzing with excitement for the first ever Recovery Talent Show. {{patient1}} walked confidently on stage holding a {{funny_object}} and announced their talent: dramatic interpretive {{verb_ing}}. {{patient2}} followed by balancing on a {{object}} while reciting their {{buzzword}} out loud. {{patient3}} insisted they would reveal “the most inspiring recovery performance of all time,” which turned out to be them {{verb_ing}} while juggling {{plural_noun}}. {{staff1}} smiled nervously, holding the microphone, while {{staff2}} held a clipboard covered in {{plural_noun}} as if they were real judges.",
+      "The audience roared with laughter when {{patient1}} dropped their {{funny_object}} and shouted “{{catchphrase}}!” like it was part of the act. {{patient2}} lost balance and fell into a pile of {{plural_noun}}, but quickly recovered by claiming it was “radical acceptance in action.” Meanwhile, {{patient3}} demanded a drumroll, but instead {{staff1}} accidentally turned on a recording of {{funny_song}}, which became the unofficial soundtrack of the night. {{staff2}} clapped enthusiastically, yelling, “Ten out of ten for {{buzzword}}!”",
+      "By intermission, chaos had become the real talent. {{patient1}} challenged {{patient2}} to a dance-off involving {{funny_object}}, while {{patient3}} argued with {{staff2}} over whether their juggling counted as a relapse prevention skill. {{staff1}} tried to keep order by waving around a {{object}}, but the crowd was too busy chanting “{{catchphrase}}!” at the top of their lungs.",
+      "The finale came when all three patients joined together in a group act called “{{buzzword}} Unplugged,” which involved {{verb_ing}}, {{plural_noun}}, and a very confused {{animal}}. {{staff1}} declared it the most inspirational talent show since {{funny_event}}, while {{staff2}} handed out trophies made of {{plural_noun}}. The closing affirmation became: “In recovery, your true talent is turning {{funny_object}} into {{buzzword}}—and doing it with style.”"
+    ]
+  },
+  {
+    key: "chair-yoga",
+    title: "Chair Yoga Catastrophe",
+    meta: "Calm intentions, comedic outcomes",
+    paragraphs: [
+      "Chair yoga was supposed to be calm and centering. {{patient1}} sat down and immediately broke a {{object}}, while {{patient2}} tried to impress everyone by balancing on one foot and chanting their {{buzzword}}. {{patient3}} was less committed, slouching in their chair while playing with a {{funny_object}}. {{staff1}} began the session with a deep breath, while {{staff2}} adjusted the chairs into a circle and tripped over {{plural_noun}}.",
+      "The first move was “reach for the sky,” but {{patient1}} stretched so far they knocked over a {{object}}, which spilled {{funny_liquid}} across the floor. {{patient2}} shouted, “{{catchphrase}}!” as they tried to help, but instead slipped and landed in {{plural_noun}}. {{patient3}} laughed so hard they nearly fell out of their chair, while {{staff1}} desperately tried to redirect with calming affirmations. {{staff2}} clapped and said, “At least we’re practicing radical {{buzzword}}!”",
+      "Midway through, things got worse. {{patient1}} decided to improvise their own pose, called “The Flailing {{animal}},” which caused the rest of the group to copy them. {{patient2}} attempted to do “Downward Recovery” but ended up {{verb_ing}} uncontrollably. {{patient3}} announced they had invented a new yoga pose called “{{funny_object}} Warrior,” which involved waving around {{plural_noun}}. {{staff1}} muttered something about insurance liability while {{staff2}} tried to keep a straight face.",
+      "The session ended in total collapse. All the chairs tipped over like dominoes, and everyone shouted “{{catchphrase}}!” as if it were part of the program. The final affirmation became: “In recovery yoga, it’s not about the perfect pose—it’s about laughing when you fall out of your chair and still breathing into your {{buzzword}}.”"
+    ]
+  },
+  {
+    key: "game-show",
+    title: "Recovery Game Show Madness",
+    meta: "Points don’t matter • buzzers definitely do",
+    paragraphs: [
+      "“Welcome to Recovery Game Show!” announced {{staff1}}, waving a {{funny_object}} as a microphone. {{patient1}} jumped up, shouting, “I’ll take {{buzzword}} for 500 points!” {{patient2}} buzzed in early with a {{funny_object}} they insisted was their personal game-show button. {{patient3}} whispered their strategy to {{staff2}}, who looked equally confused but excited.",
+      "The first question was: “Name three {{plural_noun}} you can use instead of {{bad_habit}}.” {{patient1}} answered with “{{funny_object}},” which earned zero points but maximum laughter. {{patient2}} tried to say {{plural_noun}}, but accidentally blurted out their {{adjective}} childhood nickname. {{patient3}} shouted “{{catchphrase}}!” so loudly that {{staff1}} gave them points just to move the game forward. {{staff2}} cheered, scribbling down scores that made no sense.",
+      "By round two, the competition got wild. {{patient1}} chose “Relapse Prevention” and had to act out {{verb_ing}} while holding {{funny_object}}. {{patient2}} demanded a double round on “{{buzzword}}” but instead got asked about {{plural_noun}}. {{patient3}} decided they were the new host, stealing the {{object}} and declaring everyone winners. {{staff1}} tried to protest, but {{staff2}} was already handing out fake prizes made of {{plural_noun}}.",
+      "The finale came when everyone spun the “Wheel of {{buzzword}},” which landed on “{{funny_object}} challenge.” The entire group had to chant “{{catchphrase}}!” while doing {{verb_ing}} at the same time. The affirmation became: “Recovery is like a game show—sometimes you win, sometimes you lose, but you always leave with {{buzzword}}.”"
+    ]
+  },
+  {
+    key: "field-trip",
+    title: "Field Trip Fiasco",
+    meta: "Roadside coping skills • memorable mishaps",
+    paragraphs: [
+      "The day started with excitement as the van pulled up for the big recovery field trip. {{patient1}} climbed in carrying {{funny_object}}, while {{patient2}} insisted on sitting next to {{staff1}} to talk about their {{buzzword}}. {{patient3}} sat in the back with {{staff2}}, loudly eating {{plural_noun}} and dropping crumbs everywhere. The mood was light until the van broke down in front of {{location}}.",
+      "“Don’t panic, let’s just use our {{buzzword}},” said {{staff1}}, but {{patient1}} was already {{verb_ing}} on the side of the road. {{patient2}} declared it was a test from their {{higher_power}}, while {{patient3}} shouted “{{catchphrase}}!” at passing cars. {{staff2}} pulled out a {{funny_object}} and claimed they could fix the engine with it, which made everyone laugh until they realized they might actually try.",
+      "The group tried to pass the time by playing “I Spy,” but {{patient1}} only saw {{plural_noun}}, {{patient2}} kept yelling “{{buzzword}}!” at everything, and {{patient3}} insisted the only thing worth spying was {{funny_object}}. {{staff1}} suggested journaling, but no one had pens, so {{staff2}} offered to carve affirmations into {{object}} with their car keys.",
+      "Eventually, roadside assistance arrived, but not before the entire group had invented a new coping skill called “{{funny_recovery_concept}}.” They agreed it involved {{verb_ing}} loudly until someone shouted “{{catchphrase}}!” The field trip ended back at the facility with everyone declaring it the most memorable outing since {{funny_event}}. The new affirmation became: “When the van breaks down, let your {{buzzword}} drive you home.”"
+    ]
+  }
+];
+
+    // Field metadata with examples
+    const fields = {
+      patient1: { label: "Patient 1 name", suggest: () => rand(pools.patientNames), example: "e.g., Alex, Jordan" },
+      patient2: { label: "Patient 2 name", suggest: () => rand(pools.patientNames), example: "e.g., Taylor, Sam" },
+      patient3: { label: "Patient 3 name", suggest: () => rand(pools.patientNames), example: "e.g., Riley, Casey" },
+      staff1:   { label: "Staff 1 name",   suggest: () => rand(pools.staffNames),  example: "e.g., Pat, Lee" },
+      staff2:   { label: "Staff 2 name",   suggest: () => rand(pools.staffNames),  example: "e.g., Avery, Chris" },
+
+      buzzword: { label: "Buzzword / concept", suggest: () => rand(pools.buzzword), example: "e.g., radical acceptance" },
+      recovery_concept: { label: "Recovery concept", suggest: () => rand(pools.buzzword), example: "e.g., urge surfing" },
+      catchphrase: { label: "Catchphrase (group chant)", suggest: () => rand(pools.catchphrase), example: "e.g., Serenity now!" },
+
+      adjective: { label: "Adjective", suggest: () => rand(pools.adjective), example: "e.g., sparkly, chaotic" },
+      verb_ing: { label: "Verb ending in -ing", suggest: () => rand(pools.verbIng), example: "e.g., dancing, stretching" },
+      verb: { label: "Verb", suggest: () => rand(pools.verb), example: "e.g., murmur, moonwalk" },
+
+      funny_object: { label: "Funny object", suggest: () => rand(pools.funnyObject), example: "e.g., rubber chicken" },
+      object: { label: "Object", suggest: () => rand(pools.object), example: "e.g., clipboard, megaphone" },
+      plural_noun: { label: "Plural noun", suggest: () => rand(pools.pluralNoun), example: "e.g., snacks, affirmations" },
+      noun: { label: "Noun (singular)", suggest: () => rand(pools.object), example: "e.g., chair, cone" },
+
+      animal: { label: "Animal", suggest: () => rand(pools.animal), example: "e.g., squirrel, goose" },
+      funny_liquid: { label: "Funny liquid", suggest: () => rand(pools.funnyLiquid), example: "e.g., unicorn latte" },
+      drink: { label: "Drink", suggest: () => rand(pools.drink), example: "e.g., herbal turbo tea" },
+      location: { label: "Location (nearby)", suggest: () => rand(pools.location), example: "e.g., the art room" },
+      color: { label: "Funny color", suggest: () => rand(pools.color), example: "e.g., electric blue" },
+      funny_song: { label: "Funny song / sound", suggest: () => rand(pools.funnySong), example: "e.g., kazoo anthem" },
+      weird_food: { label: "Weird food / combo", suggest: () => rand(pools.food), example: "e.g., broccoli brownies" },
+      body_part: { label: "Body part", suggest: () => rand(pools.bodyPart), example: "e.g., core, left eyebrow" },
+      phrase: { label: "Funny phrase", suggest: () => rand(pools.phrase), example: "e.g., growth is messy" },
+      higher_power: { label: "Higher power (funny title)", suggest: () => "Higher Power of " + rand(pools.object), example: "e.g., Higher Power of Glitter Jar" },
+      bad_habit: { label: "Bad habit (avoid)", suggest: () => "doomscrolling", example: "e.g., doomscrolling" },
+      funny_event: { label: "Funny event", suggest: () => "the Great Glitter Spill", example: "e.g., the Great Glitter Spill" },
+      funny_recovery_concept: { label: "Funny recovery concept", suggest: () => "Affirmation Karaoke", example: "e.g., Affirmation Karaoke" }
+    };
+
+    const chipList = [
+      ...pools.buzzword.slice(0,8),
+      ...pools.catchphrase.slice(0,4),
+      "urge surfing","values in action","radical acceptance","opposite action","anchor breath","grounding list","gratitude rampage"
+    ];
+
+    const storySel = $("#story");
+    const inputsWrap = $("#inputs");
+    const chipsWrap = $("#chips");
+
+    function collectPlaceholders(paragraphs){
+      const set = new Set();
+      const re = /{{(.*?)}}/g;
+      for (const p of paragraphs) {
+        let m; while ((m = re.exec(p))) set.add(m[1]);
+      }
+      return Array.from(set);
+    }
+
+    function renderForm(){
+      const s = stories[storySel.value|0];
+      $("#storyTitle").textContent = s.title;
+      $("#storyMeta").textContent = s.meta;
+      inputsWrap.innerHTML = "";
+      const keys = collectPlaceholders(s.paragraphs);
+
+      for (const k of keys) {
+        const meta = fields[k] || { label: toTitle(k), suggest: () => "", example: "Type here" };
+        const id = "fld_"+k;
+        const row = h("div",{class:"input-row"},
+          h("label",{for:id}, meta.label),
+          h("input",{id, type:"text", placeholder: meta.example}),
+          h("button",{class:"ghost", title:"Suggest value", onclick: () => { document.getElementById(id).value = meta.suggest(); }}, "🎯")
+        );
+        inputsWrap.appendChild(row);
+      }
+      const first = inputsWrap.querySelector("input"); if (first) first.focus();
+      $("#outTitle").textContent = "Your Story Will Appear Here";
+      $("#outBody").innerHTML = "";
+    }
+
+    function renderStory(){
+      const s = stories[storySel.value|0];
+      const values = {};
+      inputsWrap.querySelectorAll("input").forEach(inp => {
+        const key = inp.id.replace("fld_","");
+        const meta = fields[key];
+        values[key] = inp.value || (meta ? meta.suggest() : "");
+      });
+      const re = /{{(.*?)}}/g;
+      const paras = s.paragraphs.map(p => p.replace(re, (_,k)=> values[k] ?? ""));
+      $("#outTitle").textContent = s.title;
+      const out = $("#outBody");
+      out.innerHTML = "";
+      for (const pa of paras) out.appendChild(h("div",{class:"para"}, pa));
+      out.scrollIntoView({behavior:"smooth"});
+    }
+
+    // Chips
+    for (const txt of chipList) chipsWrap.appendChild(h("span",{class:"chip"}, txt));
+
+    // Story options
+    stories.forEach((s,i)=> storySel.appendChild(h("option",{value:i},`${i+1}. ${s.title}`)));
+    storySel.addEventListener("change", renderForm);
+    storySel.value = 0;
+    renderForm();
+
+    // Buttons
+    $("#randomBtn").addEventListener("click", () => {
+      inputsWrap.querySelectorAll("input").forEach(inp => {
+        const key = inp.id.replace("fld_","");
+        const meta = fields[key];
+        if (meta) inp.value = meta.suggest();
+      });
+    });
+    $("#clearBtn").addEventListener("click", () => {
+      inputsWrap.querySelectorAll("input").forEach(inp => inp.value="");
+      $("#outTitle").textContent = "Your Story Will Appear Here";
+      $("#outBody").innerHTML = "";
+    });
+    $("#generateBtn").addEventListener("click", renderStory);
+    $("#copyBtn").addEventListener("click", async () => {
+      const title = $("#outTitle").textContent.trim();
+      const paras = Array.from(document.querySelectorAll("#outBody .para")).map(p => p.textContent.trim());
+      if (!title || paras.length === 0){ alert("Generate a story first, then copy."); return; }
+      const payload = `# ${title}\\n\\n` + paras.map(p => p + "\\n").join("\\n");
+      try {
+        await navigator.clipboard.writeText(payload);
+        alert("Story copied to clipboard!");
+      } catch(e){
+        const sel = window.getSelection();
+        const range = document.createRange();
+        const out = $("#outBody");
+        range.selectNodeContents(out);
+        sel.removeAllRanges();
+        sel.addRange(range);
+        alert("Select & copy (Ctrl/Cmd+C).");
+      }
+    });
+  })();
+  </script>
+</body>
+</html>
