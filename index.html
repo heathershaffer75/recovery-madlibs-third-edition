@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Recovery Mad Libs — Third & Fourth Editions</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1>Recovery Mad Libs <span class="badge">Third & Fourth Editions</span></h1>
+      <div class="sub">20 long-form, hilarious, recovery-themed Mad Libs — 3 patients + 2 staff — built for group rooms.</div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      <aside class="card panel float">
+        <div class="story-select">
+          <label for="edition">Choose an edition</label>
+          <select id="edition"></select>
+          <div class="helper">Tip: Use <span class="kbd">Tab</span> to jump fields, click 🎯 to auto-suggest, then <b>⚡ Generate</b>.</div>
+        </div>
+
+        <div class="story-select" style="margin-top:12px;">
+          <label for="story">Choose a story</label>
+          <select id="story"></select>
+        </div>
+
+        <div class="panel" style="padding:0; margin-top:12px;">
+          <div class="panel" style="padding:16px 16px 6px;">
+            <div class="story-title" id="storyTitle">—</div>
+            <div class="small" id="storyMeta"></div>
+          </div>
+          <div class="panel" style="padding:0 16px 16px;">
+            <div class="inputs" id="inputs"></div>
+            <div class="tips">Roles are fixed per story: <b>Patient 1–3</b> and <b>Staff 1–2</b>. Fill each placeholder once.</div>
+            <div class="btns" style="margin-top:12px;">
+              <button class="ghost" id="randomBtn" title="Suggest fun values for all fields">🎲 Random Fill</button>
+              <button class="ghost" id="clearBtn">🧽 Clear</button>
+              <button class="primary" id="generateBtn">⚡ Generate Story</button>
+              <button class="danger" id="copyBtn" title="Copy the generated story once it appears">📋 Copy Output</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:12px;">
+          <div class="sub" style="margin-bottom:6px;">Buzzword & Prompt Ideas</div>
+          <div id="chips" class="chips"></div>
+        </div>
+      </aside>
+
+      <section class="card output">
+        <h2 id="outTitle">Your Story Will Appear Here</h2>
+        <div id="outBody"></div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    Works 100% offline • Copy results into slides or docs • GitHub Pages ready
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
